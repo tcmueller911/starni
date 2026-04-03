@@ -42,9 +42,10 @@ final class LakeViewModel: ObservableObject {
 
         if waterTemperature == nil && waterLevel == nil && windData == nil {
             errorMessage = "Keine Daten verfuegbar. Bitte Internetverbindung pruefen."
+        } else {
+            lastUpdate = Date()
         }
 
-        lastUpdate = Date()
         isLoading = false
     }
 

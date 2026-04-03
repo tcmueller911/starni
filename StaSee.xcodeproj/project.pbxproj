@@ -18,6 +18,7 @@
 		AA000009 /* HistoryChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100009 /* HistoryChartView.swift */; };
 		AA00000A /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000A /* InfoView.swift */; };
 		AA00000B /* WindDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000B /* WindDetailView.swift */; };
+		AA00000C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000C /* SplashView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		AA100009 /* HistoryChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryChartView.swift; sourceTree = "<group>"; };
 		AA10000A /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		AA10000B /* WindDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindDetailView.swift; sourceTree = "<group>"; };
+		AA10000C /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		AA200001 /* StaSee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StaSee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -100,6 +102,7 @@
 				AA100009 /* HistoryChartView.swift */,
 				AA10000A /* InfoView.swift */,
 				AA10000B /* WindDetailView.swift */,
+				AA10000C /* SplashView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -191,6 +194,7 @@
 				AA000009 /* HistoryChartView.swift in Sources */,
 				AA00000A /* InfoView.swift in Sources */,
 				AA00000B /* WindDetailView.swift in Sources */,
+				AA00000C /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

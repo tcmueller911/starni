@@ -4,7 +4,7 @@ import SwiftUI
 struct StaSeeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
                 .preferredColorScheme(.dark)
         }
     }
