@@ -7,16 +7,16 @@ actor GKDService {
     // MARK: - Current Values
 
     func fetchWaterTemperature() async throws -> WaterTemperature {
-        let today = Self.todayString()
-        let urlString = "\(baseURL)/wassertemperatur/isar/starnberg-\(stationID)/messwerte/tabelle?beginn=\(today)&ende=\(today)"
+        let (yesterday, today) = Self.recentRange()
+        let urlString = "\(baseURL)/wassertemperatur/isar/starnberg-\(stationID)/messwerte/tabelle?beginn=\(yesterday)&ende=\(today)"
 
         let html = try await fetchHTML(from: urlString)
         return try parseTemperature(from: html)
     }
 
     func fetchWaterLevel() async throws -> WaterLevel {
-        let today = Self.todayString()
-        let urlString = "\(baseURL)/wasserstand/isar/starnberg-\(stationID)/messwerte/tabelle?beginn=\(today)&ende=\(today)"
+        let (yesterday, today) = Self.recentRange()
+        let urlString = "\(baseURL)/wasserstand/isar/starnberg-\(stationID)/messwerte/tabelle?beginn=\(yesterday)&ende=\(today)"
 
         let html = try await fetchHTML(from: urlString)
         return try parseWaterLevel(from: html)
@@ -241,11 +241,17 @@ actor GKDService {
         return formatter.date(from: trimmed)
     }
 
-    private static func todayString() -> String {
+    /// Returns (yesterday, today) strings to ensure data is available even if
+    /// today's measurements haven't been published yet.
+    private static func recentRange() -> (start: String, end: String) {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
         formatter.timeZone = TimeZone(identifier: "Europe/Berlin")
-        return formatter.string(from: Date())
+
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today) ?? today
+
+        return (formatter.string(from: yesterday), formatter.string(from: today))
     }
 
     private static func dateRange(days: Int) -> (start: String, end: String) {
