@@ -39,7 +39,7 @@ struct WindDetailView: View {
             .sorted { $0.date > $1.date }
 
         if !pastEntries.isEmpty {
-            sectionHeader(title: "Letzte 7 Tage", icon: "clock.arrow.counterclockwise")
+            sectionHeader(title: "Letzte 7 Tage", icon: "clock.arrow.circlepath")
 
             ForEach(pastEntries) { entry in
                 WindDayCard(entry: entry)
