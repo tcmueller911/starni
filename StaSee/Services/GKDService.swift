@@ -221,8 +221,11 @@ actor GKDService {
     }
 
     /// Parses both "dd.MM.yyyy HH:mm" (15-min) and "dd.MM.yyyy" (daily) formats.
+    /// GKD appends " Uhr" to timestamps (e.g. "18.07.2026 13:00 Uhr"), which is stripped first.
     private func parseGKDDate(_ string: String) -> Date? {
-        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = string
+            .replacingOccurrences(of: "Uhr", with: "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
 
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "de_DE")
