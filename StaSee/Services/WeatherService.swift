@@ -88,11 +88,56 @@ actor WeatherService {
         return entries
     }
 
+    // MARK: - Hourly Wind (today)
+
+    /// Hourly wind for today and tomorrow, to show how the wind develops during the day.
+    func fetchHourlyWind() async throws -> [HourlyWindEntry] {
+        var components = URLComponents(string: forecastURL)!
+        components.queryItems = [
+            URLQueryItem(name: "latitude", value: String(latitude)),
+            URLQueryItem(name: "longitude", value: String(longitude)),
+            URLQueryItem(name: "hourly", value: "wind_speed_10m,wind_gusts_10m,wind_direction_10m"),
+            URLQueryItem(name: "forecast_days", value: "2"),
+            URLQueryItem(name: "timezone", value: "Europe/Berlin")
+        ]
+
+        let (data, response) = try await URLSession.shared.data(from: components.url!)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw ServiceError.invalidResponse
+        }
+
+        let decoded = try JSONDecoder().decode(OpenMeteoResponse.self, from: data)
+
+        guard let hourly = decoded.hourly else {
+            throw ServiceError.noDataAvailable
+        }
+
+        var entries: [HourlyWindEntry] = []
+        for i in 0..<hourly.time.count {
+            guard let date = Self.parseISO8601(hourly.time[i]),
+                  let speed = hourly.windSpeed10m[safe: i] else { continue }
+            entries.append(HourlyWindEntry(
+                date: date,
+                speedKmh: speed,
+                gustsKmh: (hourly.windGusts10m?[safe: i]) ?? speed,
+                directionDegrees: (hourly.windDirection10m?[safe: i]) ?? 0
+            ))
+        }
+
+        return entries
+    }
+
     // MARK: - Helpers
 
     private static func parseISO8601(_ string: String) -> Date? {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withFullDate, .withTime, .withDashSeparatorInDate, .withColonSeparatorInTime]
+        // Open-Meteo returns local times without seconds, e.g. "2026-07-18T14:00"
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Europe/Berlin")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
+        if let date = formatter.date(from: string) { return date }
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         return formatter.date(from: string)
     }
 }

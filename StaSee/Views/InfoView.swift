@@ -111,6 +111,17 @@ struct InfoView: View {
 
             Divider()
 
+            sourceRow(
+                icon: "map.fill",
+                color: .indigo,
+                title: "Tiefenkarte",
+                source: "WWA Weilheim / Bayer. Landesamt f\u{00FC}r Wasserwirtschaft",
+                detail: "Digitalisiert aus der amtlichen Tiefenkarte\n(Echolot-Aufnahme 09/1980, M 1:25.000).\nMax. Tiefe 127,8 m \u{2013} nicht zur Navigation geeignet.",
+                url: "https://www.wwa-wm.bayern.de/themen/fluesse_seen/gewaesserportraits/starnberger_see.htm"
+            )
+
+            Divider()
+
             Text("Alle Daten werden direkt von den offiziellen Quellen abgerufen. Die Aktualisierung erfolgt automatisch alle 15 Minuten.")
                 .font(.caption)
                 .foregroundStyle(.tertiary)

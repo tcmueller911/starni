@@ -1,7 +1,9 @@
 import SwiftUI
+import Charts
 
 struct WindDetailView: View {
     @State private var entries: [DailyWindEntry] = []
+    @State private var hourly: [HourlyWindEntry] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
 
@@ -16,6 +18,7 @@ struct WindDetailView: View {
                 } else if let error = errorMessage {
                     errorView(error)
                 } else {
+                    hourlySection
                     pastSection
                     forecastSection
                 }
@@ -28,6 +31,101 @@ struct WindDetailView: View {
         #endif
         .task {
             await loadData()
+        }
+    }
+
+    // MARK: - Hourly (today)
+
+    @ViewBuilder
+    private var hourlySection: some View {
+        let calendar = Calendar.current
+        let todayHours = hourly.filter { calendar.isDateInToday($0.date) }
+
+        if !todayHours.isEmpty {
+            sectionHeader(title: "Windverlauf heute", icon: "clock")
+
+            VStack(alignment: .leading, spacing: 12) {
+                Chart {
+                    ForEach(todayHours) { h in
+                        AreaMark(
+                            x: .value("Zeit", h.date),
+                            y: .value("Wind", h.speedKmh)
+                        )
+                        .foregroundStyle(
+                            LinearGradient(colors: [.teal.opacity(0.35), .teal.opacity(0.05)],
+                                           startPoint: .top, endPoint: .bottom)
+                        )
+                        .interpolationMethod(.catmullRom)
+
+                        LineMark(
+                            x: .value("Zeit", h.date),
+                            y: .value("Wind", h.speedKmh)
+                        )
+                        .foregroundStyle(.teal)
+                        .lineStyle(StrokeStyle(lineWidth: 2))
+                        .interpolationMethod(.catmullRom)
+
+                        LineMark(
+                            x: .value("Zeit", h.date),
+                            y: .value("Boeen", h.gustsKmh),
+                            series: .value("Serie", "Boeen")
+                        )
+                        .foregroundStyle(.orange.opacity(0.7))
+                        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+                        .interpolationMethod(.catmullRom)
+                    }
+
+                    RuleMark(x: .value("Jetzt", Date()))
+                        .foregroundStyle(.secondary.opacity(0.5))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                        .annotation(position: .topLeading, alignment: .leading) {
+                            Text("Jetzt")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                }
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .hour, count: 4)) { _ in
+                        AxisGridLine()
+                        AxisValueLabel(format: .dateTime.hour())
+                    }
+                }
+                .chartYAxisLabel("km/h")
+                .frame(height: 190)
+
+                // legend
+                HStack(spacing: 16) {
+                    HStack(spacing: 5) {
+                        Rectangle().fill(.teal).frame(width: 16, height: 3).clipShape(Capsule())
+                        Text("Wind").font(.caption2).foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 5) {
+                        Rectangle().fill(.orange.opacity(0.7)).frame(width: 16, height: 3).clipShape(Capsule())
+                        Text("Boeen").font(.caption2).foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                }
+
+                // direction arrows every 3 hours
+                let arrowHours = todayHours.enumerated().filter { $0.offset % 3 == 0 }.map(\.element)
+                HStack(spacing: 0) {
+                    ForEach(arrowHours) { h in
+                        VStack(spacing: 3) {
+                            Image(systemName: "location.north.fill")
+                                .font(.caption)
+                                .foregroundStyle(.teal)
+                                .rotationEffect(.degrees(h.directionDegrees))
+                            Text(h.date, format: .dateTime.hour())
+                                .font(.system(size: 9))
+                                .foregroundStyle(.tertiary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .opacity(h.isPast ? 0.45 : 1.0)
+                    }
+                }
+            }
+            .padding()
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
         }
     }
 
@@ -91,7 +189,10 @@ struct WindDetailView: View {
         errorMessage = nil
 
         do {
-            entries = try await weatherService.fetchWindDays()
+            async let daysResult = weatherService.fetchWindDays()
+            async let hourlyResult = weatherService.fetchHourlyWind()
+            entries = try await daysResult
+            hourly = (try? await hourlyResult) ?? []
             if entries.isEmpty {
                 errorMessage = "Keine Winddaten verfuegbar."
             }

@@ -3,6 +3,9 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var viewModel = LakeViewModel()
     @State private var showingInfo = false
+    // UI-test hooks: launch with "-openDepthMap" / "-openWind" to jump straight to a subview.
+    @State private var showingDepthMap = ProcessInfo.processInfo.arguments.contains("-openDepthMap")
+    @State private var showingWind = ProcessInfo.processInfo.arguments.contains("-openWind")
 
     var body: some View {
         NavigationStack {
@@ -33,6 +36,12 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showingInfo) {
                 InfoView()
+            }
+            .navigationDestination(isPresented: $showingDepthMap) {
+                DepthMapView(waterLevel: viewModel.waterLevel)
+            }
+            .navigationDestination(isPresented: $showingWind) {
+                WindDetailView()
             }
         }
         .task {
@@ -107,6 +116,17 @@ struct ContentView: View {
             .buttonStyle(.plain)
         }
 
+        NavigationLink {
+            DepthMapView(waterLevel: viewModel.waterLevel)
+        } label: {
+            depthMapCard
+        }
+        .buttonStyle(.plain)
+
+        if viewModel.trafficToLake != nil || viewModel.trafficToMunich != nil {
+            trafficCard
+        }
+
         if let wind = viewModel.windData {
             NavigationLink {
                 WindDetailView()
@@ -125,6 +145,88 @@ struct ContentView: View {
                 )
             }
             .buttonStyle(.plain)
+        }
+    }
+
+    private var depthMapCard: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "map.fill")
+                .font(.title2)
+                .foregroundStyle(.indigo)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Tiefenkarte")
+                    .font(.headline)
+                Text("Wassertiefe an deiner Position \u{2013} live auf dem See")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var trafficCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "car.fill")
+                    .font(.title2)
+                    .foregroundStyle(.mint)
+                Text("Anfahrt")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("Aktuelle Verkehrslage")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+
+            if let eta = viewModel.trafficToLake {
+                trafficRow(eta)
+            }
+            if viewModel.trafficToLake != nil && viewModel.trafficToMunich != nil {
+                Divider()
+            }
+            if let eta = viewModel.trafficToMunich {
+                trafficRow(eta)
+            }
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private func trafficRow(_ eta: RouteETA) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(eta.originName)
+                        .font(.subheadline.bold())
+                    Image(systemName: "arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(eta.destinationName)
+                        .font(.subheadline.bold())
+                }
+                Text(String(format: "%.0f km%@", eta.distanceKm,
+                            eta.routeName.map { " \u{00FC}ber \($0)" } ?? ""))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            Text(String(format: "%.0f Min.", eta.travelMinutes))
+                .font(.title3.bold().monospacedDigit())
+                .foregroundStyle(trafficColor(eta))
+        }
+    }
+
+    private func trafficColor(_ eta: RouteETA) -> Color {
+        switch eta.congestionColor {
+        case "green": return .green
+        case "orange": return .orange
+        default: return .red
         }
     }
 

@@ -19,6 +19,12 @@
 		AA00000A /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000A /* InfoView.swift */; };
 		AA00000B /* WindDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000B /* WindDetailView.swift */; };
 		AA00000C /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000C /* SplashView.swift */; };
+		AA00000D /* BathymetryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000D /* BathymetryService.swift */; };
+		AA00000E /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000E /* LocationManager.swift */; };
+		AA00000F /* DepthMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10000F /* DepthMapView.swift */; };
+		AA000010 /* StarnbergBathymetry.bin in Resources */ = {isa = PBXBuildFile; fileRef = AA100010 /* StarnbergBathymetry.bin */; };
+		AA000011 /* StarnbergBathymetry.json in Resources */ = {isa = PBXBuildFile; fileRef = AA100011 /* StarnbergBathymetry.json */; };
+		AA000012 /* TrafficService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA100012 /* TrafficService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +40,12 @@
 		AA10000A /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
 		AA10000B /* WindDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindDetailView.swift; sourceTree = "<group>"; };
 		AA10000C /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		AA10000D /* BathymetryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BathymetryService.swift; sourceTree = "<group>"; };
+		AA10000E /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		AA10000F /* DepthMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthMapView.swift; sourceTree = "<group>"; };
+		AA100010 /* StarnbergBathymetry.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = StarnbergBathymetry.bin; sourceTree = "<group>"; };
+		AA100011 /* StarnbergBathymetry.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = StarnbergBathymetry.json; sourceTree = "<group>"; };
+		AA100012 /* TrafficService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficService.swift; sourceTree = "<group>"; };
 		AA200001 /* StaSee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StaSee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -64,6 +76,7 @@
 				AA400004 /* Services */,
 				AA400005 /* ViewModels */,
 				AA400006 /* Views */,
+				AA400008 /* Resources */,
 				AA100008 /* Assets.xcassets */,
 			);
 			path = StaSee;
@@ -82,6 +95,9 @@
 			children = (
 				AA100005 /* WeatherService.swift */,
 				AA100006 /* GKDService.swift */,
+				AA10000D /* BathymetryService.swift */,
+				AA10000E /* LocationManager.swift */,
+				AA100012 /* TrafficService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -103,8 +119,18 @@
 				AA10000A /* InfoView.swift */,
 				AA10000B /* WindDetailView.swift */,
 				AA10000C /* SplashView.swift */,
+				AA10000F /* DepthMapView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AA400008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AA100010 /* StarnbergBathymetry.bin */,
+				AA100011 /* StarnbergBathymetry.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		AA400007 /* Products */ = {
@@ -174,6 +200,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000008 /* Assets.xcassets in Resources */,
+				AA000010 /* StarnbergBathymetry.bin in Resources */,
+				AA000011 /* StarnbergBathymetry.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +223,10 @@
 				AA00000A /* InfoView.swift in Sources */,
 				AA00000B /* WindDetailView.swift in Sources */,
 				AA00000C /* SplashView.swift in Sources */,
+				AA00000D /* BathymetryService.swift in Sources */,
+				AA00000E /* LocationManager.swift in Sources */,
+				AA00000F /* DepthMapView.swift in Sources */,
+				AA000012 /* TrafficService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,6 +351,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Starni;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dein Standort wird verwendet, um die Wassertiefe an deiner Position auf dem See anzuzeigen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -350,6 +383,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Starni;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dein Standort wird verwendet, um die Wassertiefe an deiner Position auf dem See anzuzeigen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

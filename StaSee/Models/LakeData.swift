@@ -89,6 +89,46 @@ struct DailyWindEntry: Identifiable {
     }
 }
 
+// MARK: - Hourly Wind
+
+struct HourlyWindEntry: Identifiable {
+    let id = UUID()
+    let date: Date
+    let speedKmh: Double
+    let gustsKmh: Double
+    let directionDegrees: Double
+
+    var isPast: Bool { date < Date() }
+
+    var directionText: String {
+        let directions = ["N", "NNO", "NO", "ONO", "O", "OSO", "SO", "SSO",
+                          "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+        let index = Int((directionDegrees + 11.25) / 22.5) % 16
+        return directions[index]
+    }
+}
+
+// MARK: - Traffic
+
+struct RouteETA: Identifiable {
+    let id = UUID()
+    let originName: String
+    let destinationName: String
+    let travelMinutes: Double
+    let distanceKm: Double
+    let routeName: String?
+    let timestamp: Date
+
+    /// Rough congestion signal vs. the free-flow time of this connection (~30 min).
+    var congestionColor: String {
+        switch travelMinutes {
+        case ..<38: return "green"
+        case 38..<50: return "orange"
+        default: return "red"
+        }
+    }
+}
+
 // MARK: - Metric Type
 
 enum MetricType: String, Identifiable {
@@ -140,11 +180,13 @@ struct OpenMeteoResponse: Codable {
         let time: [String]
         let windSpeed10m: [Double]
         let windGusts10m: [Double]?
+        let windDirection10m: [Double]?
 
         enum CodingKeys: String, CodingKey {
             case time
             case windSpeed10m = "wind_speed_10m"
             case windGusts10m = "wind_gusts_10m"
+            case windDirection10m = "wind_direction_10m"
         }
     }
 

@@ -6,12 +6,15 @@ final class LakeViewModel: ObservableObject {
     @Published var waterTemperature: WaterTemperature?
     @Published var waterLevel: WaterLevel?
     @Published var windData: WindData?
+    @Published var trafficToLake: RouteETA?
+    @Published var trafficToMunich: RouteETA?
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var lastUpdate: Date?
 
     private let weatherService = WeatherService()
     private let gkdService = GKDService()
+    private let trafficService = TrafficService()
     private var refreshTimer: Timer?
 
     func loadData() async {
@@ -21,6 +24,7 @@ final class LakeViewModel: ObservableObject {
         async let tempResult = gkdService.fetchWaterTemperature()
         async let levelResult = gkdService.fetchWaterLevel()
         async let windResult = weatherService.fetchWindData()
+        async let trafficResult = trafficService.fetchBothDirections()
 
         do {
             waterTemperature = try await tempResult
@@ -39,6 +43,10 @@ final class LakeViewModel: ObservableObject {
         } catch {
             print("Wind-Fehler: \(error.localizedDescription)")
         }
+
+        let traffic = await trafficResult
+        if traffic.toLake != nil { trafficToLake = traffic.toLake }
+        if traffic.toMunich != nil { trafficToMunich = traffic.toMunich }
 
         if waterTemperature == nil && waterLevel == nil && windData == nil {
             errorMessage = "Keine Daten verfuegbar. Bitte Internetverbindung pruefen."
